@@ -7,8 +7,12 @@ D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\exa
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceJMSConnectorTest.java
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceJmsDeserializationSchema.java
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceJMSFactory.java
+D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceJMSQueueSource.java
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceJmsSerializationSchema.java
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceJMSSourceFunction.java
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceOptions.java
+D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceSourceFunction.java
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceSourceLocalTest.java
+D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceSourceOptions.java
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceSourceReader.java
+D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\Test.java

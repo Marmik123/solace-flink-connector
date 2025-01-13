@@ -15,16 +15,16 @@ public class SolaceSourceLocalTest {
         // Step 2: Initialize the Flink Table Environment
         StreamTableEnvironment tableEnv = StreamTableEnvironment.create(env);
 
-        // Step 3: Register the Custom Source Connector
+        // Step 3: Register the Custom Source Connector - Mention solace connection details here
         tableEnv.executeSql(
             "CREATE TABLE T (" +
             "  subject STRING" +
             
             ") WITH (" +
-            "  'connector' = 'solace-jms'," +
+            "  'connector' = 'solace'," +
             "  'host' = 'ws://localhost:8008'," +
             "  'vpn' = 'default'," +
-            "  'user' = 'admin'," +
+            "  'username' = 'default'," +
             "  'password' = 'admin'," +
             "  'queue' = 'marmik'" +
             ")"
@@ -37,10 +37,12 @@ public class SolaceSourceLocalTest {
         // Step 4: Query Data from the Custom Source
         Table result = tableEnv.sqlQuery("SELECT * FROM T");
 
+        // tableEnv.sqlQuery("SELECT * FROM T").execute().print();
+
         // Step 5: Convert Table to DataStream and Print
         tableEnv.toDataStream(result, Row.class).print();
 
-        // Step 6: Execute the Flink Job
+        // Step 6: Execute the Flink Job    
         env.execute("Test Solace Connector");
     }
 }

@@ -15,12 +15,12 @@ import org.slf4j.LoggerFactory;
 
 public class SolaceJMSFactory implements DynamicTableSourceFactory {
     private static final Logger LOG = LoggerFactory.getLogger(SolaceJMSFactory.class);
-    public static final String IDENTIFIER = "solace-jms";
+    public static final String IDENTIFIER = "solace";
 
     @Override
     public String factoryIdentifier() {
-        LOG.debug("Factory identifier requested: solace-jms");
-        return "solace-jms";
+        LOG.debug("Factory identifier requested: solace");
+        return IDENTIFIER;
     }
 
     @Override
@@ -44,6 +44,9 @@ public class SolaceJMSFactory implements DynamicTableSourceFactory {
 
     @Override
     public DynamicTableSource createDynamicTableSource(Context context) {
+        final FactoryUtil.TableFactoryHelper
+            factoryHelper = FactoryUtil.createTableFactoryHelper(this, context);
+        factoryHelper.validate();    
         ReadableConfig config = FactoryUtil.createTableFactoryHelper(this, context).getOptions();
         
         // Validate required options

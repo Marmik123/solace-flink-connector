@@ -7,7 +7,7 @@ import org.apache.flink.table.connector.source.DynamicTableSource;
 import org.apache.flink.table.connector.source.ScanTableSource;
 import org.apache.flink.table.connector.source.SourceProvider;
 import org.apache.flink.api.connector.source.Source;
-
+import org.apache.flink.table.connector.source.SourceFunctionProvider;
 import org.apache.flink.table.data.RowData;
 
 
@@ -15,7 +15,7 @@ import org.apache.flink.table.data.RowData;
 public class SolaceDynamicTableSource implements ScanTableSource {
 
     private final ReadableConfig config;
-
+    
     public SolaceDynamicTableSource(ReadableConfig config) {
         this.config = config;
     }
@@ -33,11 +33,13 @@ public class SolaceDynamicTableSource implements ScanTableSource {
         String queue = config.get(SolaceOptions.QUEUE_NAME);
 
         // Create the Solace JMS Source Function
-        Source<RowData,?,?> solaceSource = new SolaceJMSSourceFunction(brokerUrl, vpnName, username, password, topic,queue);
+        // Source<RowData,?,?> solaceSource = new SolaceJMSSourceFunction(brokerUrl, vpnName, username, password, topic,queue);
+        SolaceJMSQueueSource sourceFunction = new SolaceJMSQueueSource(
+            brokerUrl, vpnName, username, password, queue
+        );
 
 
-
-        return SourceProvider.of(solaceSource);
+        return SourceFunctionProvider.of(sourceFunction,false);
     }
 
     @Override
