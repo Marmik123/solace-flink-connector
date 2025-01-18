@@ -101,6 +101,23 @@ public class SolaceSourceLocalTest {
             "  'queue' = 'q.hdfc.cdc.flexcube.flink.gm'" +
             ")";
 
+        String mainDDL ="CREATE TABLE T ("+
+        "Id STRING"+
+        "Payload STRING"+
+        "PartitionKey STRING"+
+        "Topic STRING"+
+        "TimeStamp TIMESTAMP(3)" +
+        "Headers STRING" +
+        "creation_ts TIMESTAMP(3)"+
+        ") WITH (" +
+        "  'connector' = 'solace'," +
+        "  'host' = 'https://10.226.183.137:55555'," +
+        "  'vpn' = 'cdc'," +
+        "  'username' = 'datalakeuser'," +
+        "  'password' = 'hdfcbank123$'," +
+        "  'queue' = 'q.hdfc.cdc.flexcube.flink.gm'" +
+        "  'format' = 'json'," +
+        ")";
 
         // Step 3: Register the Custom Source Connector - Mention solace connection details here 
         // tableEnv.executeSql(
@@ -124,7 +141,7 @@ public class SolaceSourceLocalTest {
         // tableEnv.executeSql("SHOW CONNECTORS").print();
 
         // Step 4: Query Data from the Custom Source
-        Table result = tableEnv.sqlQuery("SELECT * FROM T");
+        Table result = tableEnv.sqlQuery("SELECT * FROM T LIMIT 10");
 
         // tableEnv.sqlQuery("SELECT * FROM T").execute().print();
 
