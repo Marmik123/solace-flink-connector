@@ -106,9 +106,9 @@ public class SolaceSourceLocalTest {
         "Payload STRING"+
         "PartitionKey STRING"+
         "Topic STRING"+
-        "TimeStamp TIMESTAMP(3)" +
+        "TimeStamp STRING" +
         "Headers STRING" +
-        "creation_ts TIMESTAMP(3)"+
+        "creation_ts STRING"+
         ") WITH (" +
         "  'connector' = 'solace'," +
         "  'host' = 'https://10.226.183.137:55555'," +
@@ -116,7 +116,7 @@ public class SolaceSourceLocalTest {
         "  'username' = 'datalakeuser'," +
         "  'password' = 'hdfcbank123$'," +
         "  'queue' = 'q.hdfc.cdc.flexcube.flink.gm'" +
-        "  'format' = 'json'," +
+        // "  'format' = 'json'," +
         ")";
 
         // Step 3: Register the Custom Source Connector - Mention solace connection details here 
@@ -134,7 +134,7 @@ public class SolaceSourceLocalTest {
         //     ")"
         // );
 
-        tableEnv.executeSql(ddl);
+        tableEnv.executeSql(mainDDL);
 
         // Debug: Confirm the table creation
         tableEnv.executeSql("SHOW TABLES").print();
