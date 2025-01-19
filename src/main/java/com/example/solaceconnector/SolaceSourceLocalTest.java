@@ -106,16 +106,15 @@ public class SolaceSourceLocalTest {
         "Payload STRING,"+
         "PartitionKey STRING,"+
         "Topic STRING,"+
-        "TimeStamp STRING," +
+        "`TimeStamp` STRING," +
         "Headers STRING" +
-        // "creation_ts TIMESTAMP(3)"+
         ") WITH (" +
         "  'connector' = 'solace'," +
         "  'host' = 'https://10.226.183.137:55555'," +
         "  'vpn' = 'cdc'," +
         "  'username' = 'datalakeuser'," +
         "  'password' = 'hdfcbank123$'," +
-        "  'queue' = 'q.hdfc.cdc.flexcube.flink.gm'" +
+        "  'queue' = 'q.hdfc.cdc.flexcube.flink.gm'," +
         "  'format' = 'json'" +
         ")";
 
