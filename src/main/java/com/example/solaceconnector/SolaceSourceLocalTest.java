@@ -106,7 +106,6 @@ public class SolaceSourceLocalTest {
         "Payload STRING,"+
         "PartitionKey STRING,"+
         "Topic STRING,"+
-        "`TimeStamp` STRING," +
         "Headers STRING" +
         ") WITH (" +
         "  'connector' = 'solace'," +
