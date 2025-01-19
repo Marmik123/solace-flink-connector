@@ -116,7 +116,7 @@ public class SolaceSourceLocalTest {
         "  'username' = 'datalakeuser'," +
         "  'password' = 'hdfcbank123$'," +
         "  'queue' = 'q.hdfc.cdc.flexcube.flink.gm'" +
-        "  'format' = 'json'," +
+        "  'format' = 'json'" +
         ")";
 
         // Step 3: Register the Custom Source Connector - Mention solace connection details here 
