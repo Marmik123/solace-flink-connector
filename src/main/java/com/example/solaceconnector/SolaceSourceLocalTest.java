@@ -124,16 +124,15 @@ public class SolaceSourceLocalTest {
         //     "CREATE TABLE T (" +
         //     "  subject STRING" +
             
-        //     ") WITH (" +
-        //     "  'connector' = 'solace'," +
-        //     "  'host' = 'https://10.226.183.137:55555'," +
-        //     "  'vpn' = 'cdc'," +
-        //     "  'username' = 'datalakeuser'," +
-        //     "  'password' = 'hdfcbank123$'," +
-        //     "  'queue' = 'q.hdfc.cdc.flexcube.flink.gm'" +
-        //     ")"
-        // );
-
+        //  ") WITH (" +
+        // "  'connector' = '<YOUR_CUSTOM_CONNECTOR_IDENTIFIER>'," +
+        // "  'host' = 'https://<hostname>:<PORT>'," +
+        // "  'vpn' = '<VPN>'," +
+        // "  'username' = '<USERNAME>'," +
+        // "  'password' = '<PASSWORD>'," +
+        // "  'queue' = '<QUEUE>'" +
+        // // "  'format' = 'json'," +
+        // ")";
         tableEnv.executeSql(mainDDL);
 
         // Debug: Confirm the table creation
