@@ -5,6 +5,8 @@ import org.apache.flink.streaming.api.functions.source.SourceFunction;
 import org.apache.flink.table.data.GenericRowData;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.data.StringData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -40,6 +42,13 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
         this.queue = queue;
     }
 
+
+    private static final Logger LOG = LoggerFactory.getLogger(SolaceJMSQueueSource.class);
+
+
+
+
+
     @Override
     public void run(SourceContext<RowData> ctx) throws Exception {
         // Step 1: Create JMS Connection Factory
@@ -53,23 +62,23 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
         connection = connectionFactory.createConnection();
         connection.start();
 
-        // Step 3: Create JMS Session
+        // Step 3: Create JMS Session.
         session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-        // Step 4: Create JMS Topic and Consumer
+        // Step 4: Create JMS Topic and Consumer.
         Queue solaceQueue = session.createQueue(queue);
         consumer = session.createConsumer(solaceQueue);
 
-        // 5. Start the connection to receive messages
-        connection.start();
+        // 5.Receive Messages.
         while (isRunning) {
             try {
                 // Fetch message from Solace
                 Message message = consumer.receive(1000); // Replace with Solace fetch logic
                 System.out.print("##############################################");
-                System.out.print(message);
+                System.out.print(message.toString());
+                LOG.info("Message: {}", message);
                 System.out.print("##############################################");
-
+                
                 // Create a map to store the entire message details
                 Map<String, Object> messageData = new HashMap<>();
                 MessageProcessor messageProcessor =new MessageProcessor();
@@ -116,11 +125,12 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
 
                     // Use custom deserialization logic
                     RowData rowData = deserializationSchema.deserialize(messageBytes);
-
+                    LOG.info("######ROWDATA######: {}", rowData);
                     // Emit the deserialized data
-                    synchronized (ctx.getCheckpointLock()) {
-                        ctx.collect(rowData);
-                    }
+                    // synchronized (ctx.getCheckpointLock()) {
+                    //     ctx.collect(rowData);
+                    // }
+                    ctx.collect(rowData);
                 }
             } catch (Exception e) {
                 // Log the exception and continue processing
