@@ -108,13 +108,13 @@ public class SolaceSourceLocalTest {
         "Topic STRING,"+
         "Headers STRING" +
         ") WITH (" +
-        "  'connector' = 'solace'," +
-        "  'host' = 'https://10.226.183.137:55555'," +
-        "  'vpn' = 'cdc'," +
-        "  'username' = 'datalakeuser'," +
-        "  'password' = 'hdfcbank123$'," +
-        "  'queue' = 'q.hdfc.cdc.flexcube.flink.gm'," +
-        "  'format' = 'json'" +
+        "  'connector' = '<CONNECTOR_IDENTIFIER>'," +
+        "  'host' = 'https://<hostname or IP>:<PORT>'," +
+        "  'vpn' = '<VPN>'," +
+        "  'username' = '<username>'," +
+        "  'password' = '<password>'," +
+        "  'queue' = '<queuename>'," +
+        "  'format' = '<format>'" +
         ")";
 
         // Step 3: Register the Custom Source Connector - Mention solace connection details here 
