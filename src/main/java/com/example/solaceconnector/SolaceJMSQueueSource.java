@@ -54,14 +54,16 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData>  {
         // Step 5: Receive Messages
         while (isRunning) {
             Message message = consumer.receive(1000); // Timeout of 1 second
-            if (message instanceof TextMessage) {
-                String text = ((TextMessage) message).getText();
-                // synchronized (ctx.getCheckpointLock()) {
-                //     ctx.collect(text);
-                // }
-                ctx.collect(GenericRowData.of(StringData.fromString(text)));
-            }
-        }
+            // if (message instanceof TextMessage) {
+            //     String text = ((TextMessage) message).getText();
+            //     // synchronized (ctx.getCheckpointLock()) {
+            //     //     ctx.collect(text);
+            //     // }
+                
+            //     ctx.collect(GenericRowData.of(StringData.fromString(text)));
+            // }
+            ctx.collect(GenericRowData.of(message));
+        }   
     }
 
     @Override

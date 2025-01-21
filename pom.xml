@@ -155,7 +155,7 @@
 
 
     <!-- Logging -->
-    <dependency>
+    <!-- <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>1.7.36</version>
@@ -164,7 +164,7 @@
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-simple</artifactId>
         <version>1.7.36</version>
-    </dependency>
+    </dependency> -->
 </dependencies>
 
 
