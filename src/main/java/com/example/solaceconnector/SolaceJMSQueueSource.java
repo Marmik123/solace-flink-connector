@@ -66,6 +66,10 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
             try {
                 // Fetch message from Solace
                 Message message = consumer.receive(1000); // Replace with Solace fetch logic
+                System.out.print("##############################################");
+                System.out.print(message);
+                System.out.print("##############################################");
+
                 // Create a map to store the entire message details
                 Map<String, Object> messageData = new HashMap<>();
                 MessageProcessor messageProcessor =new MessageProcessor();
