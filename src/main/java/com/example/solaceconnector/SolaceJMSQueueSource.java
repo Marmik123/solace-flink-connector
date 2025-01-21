@@ -6,11 +6,20 @@ import org.apache.flink.table.data.GenericRowData;
 import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.data.StringData;
 
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.jms.*;
 import com.solacesystems.jms.SolConnectionFactory;
 import com.solacesystems.jms.SolJmsUtility;
+import com.solacesystems.jms.message.SolTextMessage;
+import com.example.solaceconnector.MessageProcessor;
+// import io.netty.channel.ChannelOutboundBuffer.MessageProcessor;
+
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
-public class SolaceJMSQueueSource extends RichSourceFunction<RowData>  {
+
+public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
 
     private final String brokerUrl;
     private final String vpnName;
@@ -51,28 +60,81 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData>  {
         Queue solaceQueue = session.createQueue(queue);
         consumer = session.createConsumer(solaceQueue);
 
-        // Step 5: Receive Messages
+        // 5. Start the connection to receive messages
+        connection.start();
         while (isRunning) {
-            Message message = consumer.receive(1000); // Timeout of 1 second
-            // if (message instanceof TextMessage) {
-            //     String text = ((TextMessage) message).getText();
-            //     // synchronized (ctx.getCheckpointLock()) {
-            //     //     ctx.collect(text);
-            //     // }
-                
-            //     ctx.collect(GenericRowData.of(StringData.fromString(text)));
-            // }
-            ctx.collect(GenericRowData.of(message));
-        }   
+            try {
+                // Fetch message from Solace
+                Message message = consumer.receive(1000); // Replace with Solace fetch logic
+                // Create a map to store the entire message details
+                Map<String, Object> messageData = new HashMap<>();
+                MessageProcessor messageProcessor =new MessageProcessor();
+                // messageProcessor.processMessage(message)
+                if (message != null) {
+                    String payload;
+
+                    // Check for different message types
+                    // if (message instanceof SolTextMessage) {
+                    //     payload = ((SolTextMessage) message).getText(); // Extract text from SolTextMessage
+                    // } else if (message instanceof TextMessage) {
+                    //     payload = ((TextMessage) message).getText(); // Handle standard TextMessage
+                    // } else {
+                    //     // Handle other message types (e.g., BytesMessage, MapMessage)
+                    //     throw new IllegalArgumentException("Unsupported message type: " + message.getClass());
+                    // }
+                    if (message instanceof SolTextMessage) {
+                        payload = ((SolTextMessage) message).getText(); // Extract text
+                    } else if (message instanceof TextMessage) {
+                        payload = ((TextMessage) message).getText(); // Handle TextMessage
+                    } else if (message instanceof BytesMessage) {
+                        BytesMessage bytesMessage = (BytesMessage) message;
+                        byte[] data = new byte[(int) bytesMessage.getBodyLength()];
+                        bytesMessage.readBytes(data);
+                        payload = new String(data); // Convert bytes to string
+                    } else if (message instanceof MapMessage) {
+                        MapMessage mapMessage = (MapMessage) message;
+                        Map<String, Object> mapData = new HashMap<>();
+                        Enumeration<String> keys = mapMessage.getMapNames();
+                        while (keys.hasMoreElements()) {
+                            String key = keys.nextElement();
+                            mapData.put(key, mapMessage.getObject(key));
+                        }
+                        payload = mapData.toString(); // Convert map to string
+                    } else {
+                        // Handle other types generically
+                        payload = message.toString();
+                    }
+                    // Convert message payload to byte[] for deserialization
+                    byte[] messageBytes = payload.getBytes();
+
+                    // Instantiate deserializer.
+                    DynamicMsgDeserializer deserializationSchema = new DynamicMsgDeserializer();
+
+                    // Use custom deserialization logic
+                    RowData rowData = deserializationSchema.deserialize(messageBytes);
+
+                    // Emit the deserialized data
+                    synchronized (ctx.getCheckpointLock()) {
+                        ctx.collect(rowData);
+                    }
+                }
+            } catch (Exception e) {
+                // Log the exception and continue processing
+                e.printStackTrace();
+            }
+        }
     }
 
     @Override
     public void cancel() {
         isRunning = false;
         try {
-            if (consumer != null) consumer.close();
-            if (session != null) session.close();
-            if (connection != null) connection.close();
+            if (consumer != null)
+                consumer.close();
+            if (session != null)
+                session.close();
+            if (connection != null)
+                connection.close();
         } catch (JMSException e) {
             e.printStackTrace();
         }
