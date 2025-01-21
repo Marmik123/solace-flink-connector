@@ -117,20 +117,7 @@ public class SolaceSourceLocalTest {
         "  'format' = '<format>'" +
         ")";
 
-        // Step 3: Register the Custom Source Connector - Mention solace connection details here 
-        // tableEnv.executeSql(
-        //     "CREATE TABLE T (" +
-        //     "  subject STRING" +
-            
-        //     ") WITH (" +
-        //     "  'connector' = 'solace'," +
-        //     "  'host' = 'https://10.226.183.137:55555'," +
-        //     "  'vpn' = 'cdc'," +
-        //     "  'username' = 'datalakeuser'," +
-        //     "  'password' = 'hdfcbank123$'," +
-        //     "  'queue' = 'q.hdfc.cdc.flexcube.flink.gm'" +
-        //     ")"
-        // );
+       
 
         tableEnv.executeSql(mainDDL);
 
