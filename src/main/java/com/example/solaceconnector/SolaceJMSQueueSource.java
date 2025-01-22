@@ -18,6 +18,7 @@ import com.solacesystems.jms.SolJmsUtility;
 import com.solacesystems.jms.message.SolTextMessage;
 import com.example.solaceconnector.MessageProcessor;
 // import io.netty.channel.ChannelOutboundBuffer.MessageProcessor;
+import com.example.solaceconnector.message_builder.JMSHeadersBuilder;
 
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 
@@ -42,12 +43,7 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
         this.queue = queue;
     }
 
-
     private static final Logger LOG = LoggerFactory.getLogger(SolaceJMSQueueSource.class);
-
-
-
-
 
     @Override
     public void run(SourceContext<RowData> ctx) throws Exception {
@@ -74,72 +70,92 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
             try {
                 // Fetch message from Solace
                 Message message = consumer.receive(1000); // Replace with Solace fetch logic
+                if(message!=null){
                 System.out.print("##############################################");
                 System.out.print(message.toString());
                 LOG.info("Message: {}", message);
                 System.out.print("##############################################");
                 String payload;
-                
-                String GG_ID=message.getStringProperty("GG_ID");    
+                // MESSAGE ID
+                String messageID = message.getJMSMessageID();
+                // Topic Name
+                String topic = message.getJMSDestination().toString();
+                String GG_ID = message.getStringProperty("GG_ID");
+
+                // Building headers json from enumeration.
+                String headersJson = JMSHeadersBuilder.buildHeadersJson(message);
+                LOG.info("Headers JSON: {}", headersJson);
+
                 // if (message instanceof SolTextMessage) {
-                //             payload = ((SolTextMessage) message).getText(); // Extract text
-                //         } else if (message instanceof TextMessage) {
-                //             payload = ((TextMessage) message).getText(); // Handle TextMessage
-                //         } 
+                // payload = ((SolTextMessage) message).getText(); // Extract text
+                // } else if (message instanceof TextMessage) {
+                // payload = ((TextMessage) message).getText(); // Handle TextMessage
+                // }
                 // // Create a map to store the entire message details
                 // Map<String, Object> messageData = new HashMap<>();
                 // MessageProcessor messageProcessor =new MessageProcessor();
                 // messageProcessor.processMessage(message)
                 // if (message != null) {
-                //     String payload;
+                // String payload;
 
-                //     // Check for different message types
-                //     // if (message instanceof SolTextMessage) {
-                //     //     payload = ((SolTextMessage) message).getText(); // Extract text from SolTextMessage
-                //     // } else if (message instanceof TextMessage) {
-                //     //     payload = ((TextMessage) message).getText(); // Handle standard TextMessage
-                //     // } else {
-                //     //     // Handle other message types (e.g., BytesMessage, MapMessage)
-                //     //     throw new IllegalArgumentException("Unsupported message type: " + message.getClass());
-                //     // }
-                //     if (message instanceof SolTextMessage) {
-                //         payload = ((SolTextMessage) message).getText(); // Extract text
-                //     } else if (message instanceof TextMessage) {
-                //         payload = ((TextMessage) message).getText(); // Handle TextMessage
-                //     } else if (message instanceof BytesMessage) {
-                //         BytesMessage bytesMessage = (BytesMessage) message;
-                //         byte[] data = new byte[(int) bytesMessage.getBodyLength()];
-                //         bytesMessage.readBytes(data);
-                //         payload = new String(data); // Convert bytes to string
-                //     } else if (message instanceof MapMessage) {
-                //         MapMessage mapMessage = (MapMessage) message;
-                //         Map<String, Object> mapData = new HashMap<>();
-                //         Enumeration<String> keys = mapMessage.getMapNames();
-                //         while (keys.hasMoreElements()) {
-                //             String key = keys.nextElement();
-                //             mapData.put(key, mapMessage.getObject(key));
-                //         }
-                //         payload = mapData.toString(); // Convert map to string
-                //     } else {
-                //         // Handle other types generically
-                //         payload = message.toString();
-                //     }
-                //     // Convert message payload to byte[] for deserialization
-                //     byte[] messageBytes = payload.getBytes();
+                // // Check for different message types
+                // // if (message instanceof SolTextMessage) {
+                // // payload = ((SolTextMessage) message).getText(); // Extract text from
+                // SolTextMessage
+                // // } else if (message instanceof TextMessage) {
+                // // payload = ((TextMessage) message).getText(); // Handle standard
+                // TextMessage
+                // // } else {
+                // // // Handle other message types (e.g., BytesMessage, MapMessage)
+                // // throw new IllegalArgumentException("Unsupported message type: " +
+                // message.getClass());
+                // // }
+                // if (message instanceof SolTextMessage) {
+                // payload = ((SolTextMessage) message).getText(); // Extract text
+                // } else if (message instanceof TextMessage) {
+                // payload = ((TextMessage) message).getText(); // Handle TextMessage
+                // } else if (message instanceof BytesMessage) {
+                // BytesMessage bytesMessage = (BytesMessage) message;
+                // byte[] data = new byte[(int) bytesMessage.getBodyLength()];
+                // bytesMessage.readBytes(data);
+                // payload = new String(data); // Convert bytes to string
+                // } else if (message instanceof MapMessage) {
+                // MapMessage mapMessage = (MapMessage) message;
+                // Map<String, Object> mapData = new HashMap<>();
+                // Enumeration<String> keys = mapMessage.getMapNames();
+                // while (keys.hasMoreElements()) {
+                // String key = keys.nextElement();
+                // mapData.put(key, mapMessage.getObject(key));
+                // }
+                // payload = mapData.toString(); // Convert map to string
+                // } else {
+                // // Handle other types generically
+                // payload = message.toString();
+                // }
+                // // Convert message payload to byte[] for deserialization
+                // byte[] messageBytes = payload.getBytes();
 
-                //     // Instantiate deserializer.
-                //     DynamicMsgDeserializer deserializationSchema = new DynamicMsgDeserializer();
+                // // Instantiate deserializer.
+                // DynamicMsgDeserializer deserializationSchema = new DynamicMsgDeserializer();
 
-                //     // Use custom deserialization logic
-                //     RowData rowData = deserializationSchema.deserialize(messageBytes);
-                //     LOG.info("######ROWDATA######: {}", rowData);
-                    // Emit the deserialized data
-                    // synchronized (ctx.getCheckpointLock()) {
-                    //     ctx.collect(rowData);
-                    // }
-                    GenericRowData rowData=GenericRowData.of(StringData.fromString(GG_ID));
-                    LOG.info("####ROWDATA####"+rowData);
-                    ctx.collect(rowData);
+                // // Use custom deserialization logic
+                // RowData rowData = deserializationSchema.deserialize(messageBytes);
+                // LOG.info("######ROWDATA######: {}", rowData);
+                // Emit the deserialized data
+                // synchronized (ctx.getCheckpointLock()) {
+                // ctx.collect(rowData);
+                // }
+                GenericRowData rowData = GenericRowData.of(
+                        StringData.fromString(messageID),
+                        StringData.fromString(headersJson),
+                        StringData.fromString(topic)
+                        );
+                LOG.info("####ROWDATA####" + rowData);
+                ctx.collect(rowData);
+                }
+                else {
+                    LOG.info("MESSAGE IS NOT AVAILABLE");
+                }
                 // }
             } catch (Exception e) {
                 // Log the exception and continue processing
