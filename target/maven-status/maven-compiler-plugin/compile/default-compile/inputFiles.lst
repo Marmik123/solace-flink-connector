@@ -1,4 +1,6 @@
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\DynamicMsgDeserializer.java
+D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\message_builder\JMSHeadersBuilder.java
+D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\message_builder\JMSPayloadBuilder.java
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\MessageProcessor.java
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceDynamicTableSource.java
 D:\Data Engineering Projects\solace-connector-maven\solace\src\main\java\com\example\solaceconnector\SolaceJMSFactory.java

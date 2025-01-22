@@ -10,13 +10,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class JMSHeadersBuilder {
 
     public static String buildHeadersJson(Message message) throws JMSException {
-        Map<String, Object> headers = new HashMap<>();
+        Map<String, String> headers = new HashMap<>();
         Enumeration<String> propertyNames = message.getPropertyNames();
 
         // Iterate over all JMS Properties
         while (propertyNames.hasMoreElements()) {
             String propertyName = propertyNames.nextElement();
-            Object propertyValue = message.getObjectProperty(propertyName); // Fetch the property value
+            String propertyValue = message.getStringProperty(propertyName); // Fetch the property value
             headers.put(propertyName, propertyValue); // Add to headers map
         }
 
