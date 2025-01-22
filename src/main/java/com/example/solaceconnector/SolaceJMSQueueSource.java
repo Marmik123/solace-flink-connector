@@ -7,7 +7,13 @@ import org.apache.flink.table.data.RowData;
 import org.apache.flink.table.data.StringData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
+import javax.jms.Message;
+import javax.jms.TextMessage;
+import javax.jms.BytesMessage;
+import java.io.ByteArrayInputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +27,6 @@ import com.example.solaceconnector.MessageProcessor;
 // import io.netty.channel.ChannelOutboundBuffer.MessageProcessor;
 import com.example.solaceconnector.message_builder.JMSHeadersBuilder;
 import com.example.solaceconnector.message_builder.JMSPayloadBuilder;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
@@ -111,9 +116,22 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
                     ObjectMapper objectMapper = new ObjectMapper();
                     String string_header= objectMapper.writeValueAsString(headers);
                     LOG.info("STRING HEADERS::::::"+string_header);
-
-
-
+                    String solPayload = null;
+                    
+                    //PAYLOAD PARSING.
+                    if (message instanceof TextMessage) {
+                        solPayload = ((TextMessage) message).getText();
+                    } else if (message instanceof BytesMessage) {
+                        BytesMessage bytesMessage = (BytesMessage) message;
+                        byte[] data = new byte[(int) bytesMessage.getBodyLength()];
+                        bytesMessage.readBytes(data);
+                        solPayload = new String(data); // Convert bytes to string
+                    } else {
+                        throw new IllegalArgumentException("Unsupported message type: " + message.getClass());
+                    }
+                    LOG.info("XMLSOL PAYLOAD::::::::"+solPayload);
+                    XmlMapper xmlMapper=new XmlMapper();
+                    xmlMapper.readTree(new ByteArrayInputStream(solPayload.getBytes()));
                     // Extract and parse SolPayload
                     // JsonNode solPayloadJson = JMSPayloadBuilder.extractAndParseSolPayload(message);
 
@@ -186,8 +204,8 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
                     //  StringData.fromString(message_timestamp)
                     GenericRowData rowData = GenericRowData.of(
                             StringData.fromString(GG_ID),
-                            StringData.fromString(messageID)
-                        
+                            StringData.fromString(messageID),
+                            StringData.fromString(string_header)
                           );
                     LOG.info("####ROWDATA####" + rowData);
                     ctx.collect(rowData);
