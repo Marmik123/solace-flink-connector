@@ -11,7 +11,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.jms.*;
 import com.solacesystems.jms.SolConnectionFactory;
 import com.solacesystems.jms.SolJmsUtility;
@@ -21,6 +22,7 @@ import com.example.solaceconnector.MessageProcessor;
 import com.example.solaceconnector.message_builder.JMSHeadersBuilder;
 import com.example.solaceconnector.message_builder.JMSPayloadBuilder;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.flink.streaming.api.functions.source.RichSourceFunction;
 
@@ -84,11 +86,33 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
                     String topic = message.getJMSDestination().toString();
                     String GG_ID = message.getStringProperty("GG_ID");
 
+                    //EXTRACT TIMESTAMP
+                    // Long timestamp = message.getJMSTimestamp();
+                    // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+                    // String message_timestamp= sdf.format(new Date(timestamp));
+                    // LOG.info("MESSAGE TIMESTAMP::::::"+message_timestamp);
                     // Building headers json from enumeration.
-                    String headersJson = JMSHeadersBuilder.buildHeadersJson(message);
-                    LOG.info("Headers JSON: ######", headersJson);
-                    LOG.info(" TOPIC: ####", topic);
-                    LOG.info("messageID $$$$", messageID);
+                    // String headersJson = JMSHeadersBuilder.buildHeadersJson(message);
+                    // LOG.info("Headers JSON: ######", headersJson);
+                    // LOG.info(" TOPIC: ####", topic);
+                    // LOG.info("messageID $$$$", messageID);
+
+                    //HEADERS EXTRACTION
+                    Map<String, String> headers = new HashMap<>();
+                    Enumeration<String> propertyNames = message.getPropertyNames();
+            
+                    // Iterate over all JMS Properties
+                    while (propertyNames.hasMoreElements()) {
+                        String propertyName = propertyNames.nextElement();
+                        String propertyValue = message.getStringProperty(propertyName); // Fetch the property value
+                        headers.put(propertyName, propertyValue); // Add to headers map
+                    }
+                    LOG.info("ONLY HEADERS MAP" +headers);
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    String string_header= objectMapper.writeValueAsString(headers);
+                    LOG.info("STRING HEADERS::::::"+string_header);
+
+
 
                     // Extract and parse SolPayload
                     // JsonNode solPayloadJson = JMSPayloadBuilder.extractAndParseSolPayload(message);
@@ -159,10 +183,11 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
                     // StringData.fromString(solPayloadString),
                     // StringData.fromString(headersJson),
                     
-                    //
+                    //  StringData.fromString(message_timestamp)
                     GenericRowData rowData = GenericRowData.of(
                             StringData.fromString(GG_ID),
-                            StringData.fromString(messageID) 
+                            StringData.fromString(messageID)
+                        
                           );
                     LOG.info("####ROWDATA####" + rowData);
                     ctx.collect(rowData);
