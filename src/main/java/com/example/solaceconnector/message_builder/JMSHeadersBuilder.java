@@ -12,7 +12,7 @@ public class JMSHeadersBuilder {
     public static String buildHeadersJson(Message message) throws JMSException {
         Map<String, String> headers = new HashMap<>();
         Enumeration<String> propertyNames = message.getPropertyNames();
-
+        
         // Iterate over all JMS Properties
         while (propertyNames.hasMoreElements()) {
             String propertyName = propertyNames.nextElement();

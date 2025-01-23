@@ -202,10 +202,17 @@ public class SolaceJMSQueueSource extends RichSourceFunction<RowData> {
                     // StringData.fromString(headersJson),
                     
                     //  StringData.fromString(message_timestamp)
+                    if(message instanceof TextMessage){
+                        payload = ((TextMessage) message).getText();
+
+                    }else{
+                        payload="NULL";
+                    }
                     GenericRowData rowData = GenericRowData.of(
                             StringData.fromString(GG_ID),
                             StringData.fromString(messageID),
-                            StringData.fromString(Headers)
+                            StringData.fromString(Headers),
+                            StringData.fromString(payload)
                           );
                     LOG.info("####ROWDATA####" + rowData);
                     ctx.collect(rowData);
